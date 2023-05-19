@@ -1,0 +1,10 @@
+---
+
+# 접속 호스트 설정
+http.host: 0.0.0.0
+xpack.monitoring.elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+
+# 시큐리티 사용
+xpack.monitoring.enabled: true
+xpack.monitoring.elasticsearch.username: elastic
+xpack.monitoring.elasticsearch.password: changeme

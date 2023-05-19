@@ -1,0 +1,139 @@
+version: '2'
+
+services:
+  elasticsearch:
+    container_name: elasticsearch
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./elasticsearch/ca/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro,z
+      - ./elasticsearch/ca/elastic-stack-ca.p12:/usr/share/elasticsearch/config/elastic-stack-ca.p12:ro,z
+      - /etc/localtime:/etc/localtime:ro
+      - elasticsearch:/usr/share/elasticsearch/data:z
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - node.name=node1
+      - discovery.seed_hosts=elasticsearch,elasticsearch2,elasticsearch3
+      - cluster.initial_master_nodes=node1
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_PASSWORD=changeme
+      - bootstrap.memory_lock=true
+    networks:
+      - elk
+
+  elasticsearch2:
+    container_name: elasticsearch2
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1    
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./elasticsearch/ca/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro,z
+      - ./elasticsearch/ca/elastic-stack-ca.p12:/usr/share/elasticsearch/config/elastic-stack-ca.p12:ro,z
+      - /etc/localtime:/etc/localtime:ro
+      - elasticsearch2:/usr/share/elasticsearch/data:z
+    ports:
+      - "9201:9200"
+      - "9301:9300"
+    environment:
+      - node.name=node2
+      - discovery.seed_hosts=elasticsearch,elasticsearch2,elasticsearch3
+      - cluster.initial_master_nodes=node1
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_PASSWORD=changeme
+      - bootstrap.memory_lock=true
+    networks:
+      - elk
+
+  elasticsearch3:
+    container_name: elasticsearch3
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1         
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./elasticsearch/ca/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro,z
+      - ./elasticsearch/ca/elastic-stack-ca.p12:/usr/share/elasticsearch/config/elastic-stack-ca.p12:ro,z
+      - /etc/localtime:/etc/localtime:ro
+      - elasticsearch3:/usr/share/elasticsearch/data:z
+    ports:
+      - "9202:9200"
+      - "9302:9300"
+    environment:
+      - node.name=node3
+      - discovery.seed_hosts=elasticsearch,elasticsearch2,elasticsearch3
+      - cluster.initial_master_nodes=node1
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_PASSWORD=changeme
+      - bootstrap.memory_lock=true
+    networks:
+      - elk   
+      
+  logstash:
+    container_name: logstash
+    build:
+      context: logstash/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "5000:5000"
+      - "9600:9600"
+    environment:
+      LS_JAVA_OPTS: "-Xmx1G -Xms1G"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+      - elasticsearch2
+      - elasticsearch3
+
+  kibana:
+    container_name: kibana
+    build:
+      context: kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+      - elasticsearch2
+      - elasticsearch3
+
+networks:
+  elk:
+    driver: bridge
+
+# 하나의 서버에 복수 노드를 띄우는 경우 볼륨이 달라야한다.
+volumes:
+  elasticsearch:
+  elasticsearch2:
+  elasticsearch3:

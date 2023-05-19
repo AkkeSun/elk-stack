@@ -1,0 +1,6 @@
+
+SOPS_DEFAULT_LOG %{TIMESTAMP_ISO8601:time} %{LOGLEVEL:level} \s%{DATA:logMethod}\s- \[%{DATA:serviceKey}\] --- \[%{DATA:issue}\]
+SOPS_PARSING_FAILED_LOG %{SOPS_DEFAULT_LOG} type: %{DATA:parsingType}\s\|\|\sname: %{DATA:parsingDesc}\s\|\|\skey: %{DATA:parsingKey}\s\|\|\scode: %{GREEDYDATA:parsingCode}\s\|\|\sshopCode: %{INT:shopCode}
+SOPS_DELV_ISSUE_LOG %{SOPS_DEFAULT_LOG} name: %{DATA:delvName}\s\|\|\sinvoice: %{DATA:invoice}\s\|\|\sshopCode: %{INT:shopCode}
+SOPS_NON_RESPONSE_OR_STANDARD_ERROR_LOG %{SOPS_DEFAULT_LOG} goodsName: %{DATA:goodsName}\s\|\|\sgoodCode: %{DATA:goodsCode}\s\|\|\sorderCode: %{DATA:orderCode}\s\|\|\sorderOption: %{DATA:orderOption}\s\|\|\sshopCode: %{INT:shopCode}
+SOPS_ERROR_LOG %{SOPS_DEFAULT_LOG} %{GREEDYDATA:errorMeg}

@@ -1,0 +1,39 @@
+---
+cluster.name: docker-cluster
+
+# Elasticsearch가 실행되는 서버의 ip 주소 
+# _local_ : 127.0.0.1
+# _site_ : 로컬 네트워크 주소 (클러스터링 구성시 주로 설정)
+# _global_ : 외부 네트워크 주소network.host: ["_local_", "_site_"]
+network.host: 0.0.0.0
+
+# Elasticsearch가 사용중인 힙메모리 영역을 다른 자바 프로그램이 간섭 못하도록 미리 점유하는 설정입니다 항상 true 로 놓고 사용하는것을 권장합니다.
+# bootstrap.memory_lock: true
+
+# 노드 설정
+# discovery.type: single-node
+# node.master: true
+# node.data: false
+
+# 클라이언트와 통신하기 위한 포트 (default : 9200)
+http.port: 9200
+
+# 노드들끼리 통신하기 위한 포트 (default : 9300)
+transport.port: 9300
+
+# 시큐리티 설정 (노드끼리 연결을 하기 위해서 마스터 노드에서 인증서를 생성한다)
+xpack.license.self_generated.type: basic
+xpack.security.enabled: true
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.keystore.path: elastic-certificates.p12
+xpack.security.transport.ssl.truststore.path: elastic-certificates.p12
+
+# 클러스터에 포함된 노드의 서버 주소. 주의: public IP가 아닌 private IP를 작성한다. 
+# 주소만 적는 경우 디폴트로 9300~9305 사이의 포트값을 검색하며, tcp 포트가 이 범위 밖에 설정 된 경우 포트번호 까지 같이 적어주어야 합니다.
+# 6.x 이전 버전에서는 대신에 젠 디스커버리를 사용했습니다. 사용 방법은 아래와 같습니다.
+# discovery.zen.ping.unicast.hosts: [ "<호스트-1>", "<호스트-2>",   ... ]
+discovery.seed_hosts: ["127.0.0.1:9300", "127.0.0.1:9301", "127.0.0.1:9302"]
+
+# 클러스터가 최초 실행 될 때 명시된 노드들을 대상으로 마스터 노드를 선출
+cluster.initial_master_nodes: ["node1"] 

@@ -1,0 +1,15 @@
+---
+
+# 키바나 서버 이름
+server.name: kibana
+
+# 키바나 호스트
+server.host: 0.0.0.0
+
+# 키바나와 연동할 엘라스틱서치 설정
+elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+xpack.monitoring.ui.container.elasticsearch.enabled: true
+
+# 시큐리티 설정
+elasticsearch.username: elastic
+elasticsearch.password: changeme
